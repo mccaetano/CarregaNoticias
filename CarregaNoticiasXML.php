@@ -17,7 +17,7 @@ SessionCtlr::StartLongSession();
 echo "<pre>".PHP_EOL;
 $xmlload = new xmlLoad();
  
-$arquivo = (string)$_POST['arquivo'];
+$arquivo = "./Carros-Na-Web.xml";# (string)$_POST['arquivo'];
 
 Logger::loginfo("lendo XML: $arquivo");
 $xmldata = $xmlload->loadXML($arquivo);
@@ -33,8 +33,10 @@ $db = new DBImpl();
 $conn = $db->db_connect($dbcon["host"], $dbcon["usr"], $dbcon["pwd"], $dbcon["database"]);
 
 if (!is_null($xmldata)) {
+	$linha = 1;
 	foreach ($xmldata as $noticia) {
-		$data_Criacao = new DateTime($noticia->Data);
+		$data_tempo = new DateTime();
+		$data_tempo->createFromFormat("d/m/Y", (string)$noticia->Data);
 		$sql = "exec [dbo].[InsereNoticia] " .
 				"'".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto")."'," . 
 				"null," . 
@@ -44,14 +46,15 @@ if (!is_null($xmldata)) {
 				"'".(string)$noticia->Imagem4."'," .
 				"'".mb_convert_encoding((string)$noticia->NoticiaCompleta,"ISO-8859-1", "auto")."',".
 				"0,".
-				"'".date_format($data_Criacao, "Y-m-d")."',".
+				"'".$data_tempo->format('Y-m-d')."',".
 				"'".(string)$noticia->Page_URL."',". 
 				"null," . 
 				"null";
 		
 		$db->db_execute($sql, $conn);
-		Logger::loginfo("registro processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")");
-		echo "registro processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")";
+		Logger::loginfo("registro (".$linha.") processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")");
+		echo "registro (".$linha.") processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")";
+		$linha++;
 	}
 }
 $db->db_close($conn);
