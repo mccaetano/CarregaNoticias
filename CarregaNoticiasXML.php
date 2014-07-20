@@ -34,24 +34,24 @@ $conn = $db->db_connect($dbcon["host"], $dbcon["usr"], $dbcon["pwd"], $dbcon["da
 
 if (!is_null($xmldata)) {
 	foreach ($xmldata as $noticia) {
-		
+		$data_Criacao = new DateTime($noticia->Data);
 		$sql = "exec [dbo].[InsereNoticia] " .
-				"'".iconv("UTF-8", "ISO-8859-1//TRANSLIT", (string)$noticia->Page_Title)."'," . 
+				"'".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto")."'," . 
 				"null," . 
 				"'".(string)$noticia->Imagem1."',".
-				"null," .
-				"null," .
-				"null," .
-				"'".iconv("UTF-8", "ISO-8859-1//TRANSLIT", (string)$noticia->NoticiaCompleta)."',".
+				"'".(string)$noticia->Imagem2."',".
+				"'".(string)$noticia->Imagem3."'," .
+				"'".(string)$noticia->Imagem4."'," .
+				"'".mb_convert_encoding((string)$noticia->NoticiaCompleta,"ISO-8859-1", "auto")."',".
 				"0,".
-				"'".date("Y-m-d")."',".
+				"'".date_format($data_Criacao, "Y-m-d")."',".
 				"'".(string)$noticia->Page_URL."',". 
 				"null," . 
 				"null";
 		
 		$db->db_execute($sql, $conn);
-		Logger::loginfo("registro processado(".iconv("UTF-8", "ISO-8859-1//TRANSLIT", (string)$noticia->Page_Title).")");
-		echo "registro processado(".iconv("UTF-8", "ISO-8859-1//TRANSLIT", (string)$noticia->Page_Title).")";
+		Logger::loginfo("registro processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")");
+		echo "registro processado(".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto").")";
 	}
 }
 $db->db_close($conn);
