@@ -36,7 +36,7 @@ if (!is_null($xmldata)) {
 	$linha = 1;
 	foreach ($xmldata as $noticia) {
 		$data_tempo = new DateTime();
-		$data_tempo->createFromFormat("d/m/Y", (string)$noticia->Data);
+		$data_tempo->createFromFormat("d/m/Y", substr((string)$noticia->Data, 0, 10));
 		$sql = "exec [dbo].[InsereNoticia] " .
 				"'".mb_convert_encoding((string)$noticia->Page_Title, "ISO-8859-1", "auto")."'," . 
 				"null," . 
